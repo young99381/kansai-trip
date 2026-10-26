@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關西7日遊手機互動行程手冊</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        morandi: {
+                            primary: '#3a5a40',
+                            gradient: '#588157',
+                            accent: '#a3b18a',
+                            light: '#dad7cd',
+                            bg: '#f8f9fa',
+                            card: '#ffffff',
+                            text: '#2b2b2b',
+                            subtext: '#64748b'
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['Noto Serif TC', 'serif'],
+                        sans: ['Zen Maru Gothic', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            color: #2b2b2b;
+            font-size: 15px; /* Minimum 15px font size for high legibility */
+            font-family: 'Zen Maru Gothic', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Timeline connector styling */
+        .timeline-line::before {
+            content: '';
+            position: absolute;
+            top: 28px;
+            bottom: 28px;
+            left: 19px;
+            width: 2px;
+            background-color: #dad7cd;
+            z-index: 0;
+        }
+
+        /* Landscape ratio for photos */
+        .aspect-landscape {
+            aspect-ratio: 16 / 9;
+        }
+    </style>
+</head>
+<body class="pb-12 bg-morandi-bg">
+
+    <!-- Header & Navigation -->
+    <header class="sticky top-0 z-50 bg-morandi-primary text-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div>
+                <h1 class="text-lg md:text-xl font-bold font-serif tracking-wide flex items-center gap-2">
+                    <i class="fa-solid fa-torii-gate text-morandi-accent"></i> 關西七日遊手冊
+                </h1>
+                <p class="text-xs text-morandi-light opacity-90 font-mono">2026/11/12 - 11/18</p>
+            </div>
+            
+            <!-- Global Action Controls -->
+            <div class="flex items-center gap-2">
+                <button id="toggleEditBtn" onclick="toggleEditMode()" class="bg-morandi-gradient hover:bg-opacity-90 text-white text-xs md:text-sm px-3.5 py-1.5 rounded-lg border border-morandi-accent/30 transition flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    <span id="editBtnText">編輯行程</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Sticky Day Navigation Bar -->
+        <nav class="bg-morandi-gradient text-white border-t border-morandi-accent/20 overflow-x-auto no-scrollbar">
+            <div class="flex whitespace-nowrap px-2 py-2 gap-2 max-w-7xl mx-auto text-sm">
+                <button onclick="scrollToDay('day-1')" class="px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 active:bg-white/30 transition text-xs font-medium border border-white/20">Day 1 (11/12)</button>
+                <button onclick="scrollToDay('day-2')" class="px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 active:bg-white/30 transition text-xs font-medium border border-white/20">Day 2 (11/13)</button>
+                <button onclick="scrollToDay('day-3')" class="px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 active:bg-white/30 transition text-xs font-medium border border-white/20">Day 3 (11/14)</button>
+                <button onclick="scrollToDay('day-4')" class="px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 active:bg-white/30 transition text-xs font-medium border border-white/20">Day 4 (11/15)</button>
+                <button onclick="scrollToDay('day-5')" class="px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 active:bg-white/30 transition text-xs font-medium border border-white/20">Day 5 (11/16)</button>
+                <button onclick="scrollToDay('day-6')" class="px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 active:bg-white/30 transition text-xs font-medium border border-white/20">Day 6 (11/17)</button>
+                <button onclick="scrollToDay('day-7')" class="px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 active:bg-white/30 transition text-xs font-medium border border-white/20">Day 7 (11/18)</button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-3 sm:px-6 py-6 space-y-8" id="itineraryContainer">
+        <!-- Rendered by JavaScript -->
+    </main>
+
+    <!-- Invisible File Input for File Uploads -->
+    <input type="file" id="imageFileInput" accept="image/*" class="hidden">
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-5 right-5 transform translate-y-20 opacity-0 transition-all duration-300 bg-morandi-primary text-white px-4 py-2.5 rounded-xl shadow-lg flex items-center gap-2 text-sm z-50 pointer-events-none">
+        <i class="fa-solid fa-circle-check text-morandi-accent"></i>
+        <span id="toastMsg">提示訊息</span>
+    </div>
+
+    <script>
+        // Pre-populated Itinerary Data
+        const defaultItinerary = [
+            {
+                day: 1,
+                date: '2026/11/12 (四)',
+                title: '啟程與京都抵達',
+                items: [
+                    '小港機場',
+                    '關西機場',
+                    '買晚餐',
+                    '京都車站',
+                    '四條站',
+                    'Kiori Higashino Toin Hotel'
+                ],
+                photos: []
+            },
+            {
+                day: 2,
+                date: '2026/11/13 (五)',
+                title: '洛北貴船與鴨川散策',
+                items: [
+                    'Kiori 出發',
+                    '出柳町站',
+                    '鞍馬站',
+                    '鞍馬寺',
+                    '木根之道',
+                    '奧之院魔王殿',
+                    '貴船神社',
+                    '叡電一乘寺站',
+                    '午餐',
+                    '休息',
+                    '賀茂御祖神社(下鴨神社)',
+                    '鴨川三角洲',
+                    '晚餐',
+                    '返回 Kiori'
+                ],
+                photos: []
+            },
+            {
+                day: 3,
+                date: '2026/11/14 (六)',
+                title: '金閣寺與嵐山風光',
+                items: [
+                    'Kiori 出發',
+                    '金閣寺',
+                    '北野天滿宮',
+                    '午餐',
+                    '嵐山',
+                    'Kiori 休息',
+                    '晚餐',
+                    '有體力再逛街'
+                ],
+                photos: []
+            },
+            {
+                day: 4,
+                date: '2026/11/15 (日)',
+                title: '經典古都巡禮與伏見稻荷',
+                items: [
+                    'Kiori (飯店出發)',
+                    '清水寺',
+                    '二年坂、三年坂',
+                    '花見小路',
+                    '錦市場',
+                    '錦天滿宮',
+                    '東福寺',
+                    '伏見稻荷大社',
+                    '京都車站',
+                    '逛街',
+                    '返回 Kiori'
+                ],
+                photos: []
+            },
+            {
+                day: 5,
+                date: '2026/11/16 (一)',
+                title: '東山賞楓與難波商圈',
+                items: [
+                    '永觀堂',
+                    '平安神宮',
+                    '午餐',
+                    'Kiori拿行李',
+                    '京都車站',
+                    '梅田車站',
+                    '難波車站',
+                    'Royal大阪皇家飯店休息',
+                    '跑跑人',
+                    '晚餐',
+                    '唐吉訶德'
+                ],
+                photos: []
+            },
+            {
+                day: 6,
+                date: '2026/11/17 (二)',
+                title: '國寶姬路城與神戶港一日遊',
+                items: [
+                    '姬路城',
+                    '神戶港',
+                    '勝尾寺',
+                    '一日遊！'
+                ],
+                photos: []
+            },
+            {
+                day: 7,
+                date: '2026/11/18 (三)',
+                title: '難波最後採買與歸途',
+                items: [
+                    'Royal大阪皇家飯店',
+                    '南海難波',
+                    '關西機場',
+                    '小港機場'
+                ],
+                photos: []
+            }
+        ];
+
+        // Global State & Storage Handling
+        let itineraryData = JSON.parse(localStorage.getItem('kansai_itinerary_data_v3')) || defaultItinerary;
+        let isEditMode = false;
+        let targetUploadIndex = { dayIdx: null, photoIdx: null };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderItinerary();
+            initFileUpload();
+        });
+
+        function saveData() {
+            localStorage.setItem('kansai_itinerary_data_v3', JSON.stringify(itineraryData));
+        }
+
+        // Render full document
+        function renderItinerary() {
+            const container = document.getElementById('itineraryContainer');
+            container.innerHTML = '';
+
+            itineraryData.forEach((dayData, dayIdx) => {
+                const dayCard = document.createElement('section');
+                dayCard.id = `day-${dayData.day}`;
+                dayCard.className = 'bg-white rounded-2xl shadow-sm border border-morandi-light/50 overflow-hidden transition-all';
+
+                // Section Header
+                const headerHtml = `
+                    <div class="bg-gradient-to-r from-morandi-primary to-morandi-gradient text-white px-4 sm:px-6 py-3.5 flex flex-wrap justify-between items-center gap-2">
+                        <div class="flex items-center gap-3">
+                            <span class="bg-white/20 text-white font-serif font-bold text-sm sm:text-base px-3 py-1 rounded-full border border-white/20">Day ${dayData.day}</span>
+                            <div>
+                                <h2 class="font-bold text-base sm:text-lg font-serif tracking-wide">${escapeHtml(dayData.title)}</h2>
+                                <p class="text-xs text-morandi-light font-mono">${escapeHtml(dayData.date)}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // Left Column: Items List with Individual Delete Button
+                let itemsListHtml = '';
+                dayData.items.forEach((item, itemIdx) => {
+                    itemsListHtml += `
+                        <div class="relative flex items-center gap-3 z-10 group">
+                            <!-- Bullet Number Badge -->
+                            <div class="w-8 h-8 rounded-full bg-morandi-bg border-2 border-morandi-accent text-morandi-primary flex items-center justify-center shrink-0 font-bold text-xs shadow-xs">
+                                ${itemIdx + 1}
+                            </div>
+
+                            <!-- Text or Editable Input -->
+                            <div class="flex-grow flex items-center justify-between bg-morandi-bg/70 hover:bg-morandi-bg rounded-xl px-3.5 py-2.5 border border-morandi-light/40 transition">
+                                ${isEditMode ? `
+                                    <input type="text" value="${escapeHtml(item)}" 
+                                           onchange="updateItemText(${dayIdx}, ${itemIdx}, this.value)" 
+                                           class="w-full bg-white border border-morandi-accent/50 rounded-lg px-2.5 py-1 text-sm text-morandi-text focus:outline-none focus:ring-2 focus:ring-morandi-primary/50">
+                                    <button onclick="deleteSingleItem(${dayIdx}, ${itemIdx})" 
+                                            class="ml-2 text-red-500 hover:text-red-700 hover:bg-red-50 p-1.5 rounded-lg transition shrink-0" 
+                                            title="刪除此單項行程">
+                                        <i class="fa-solid fa-trash-can text-sm"></i>
+                                    </button>
+                                ` : `
+                                    <span class="text-sm font-medium text-morandi-text leading-relaxed">${escapeHtml(item)}</span>
+                                `}
+                            </div>
+                        </div>
+                    `;
+                });
+
+                // Right Column: Landscape Photo Gallery
+                let photosGridHtml = '';
+                const photos = dayData.photos || [];
+
+                photos.forEach((photoUrl, photoIdx) => {
+                    if (photoUrl) {
+                        photosGridHtml += `
+                            <div class="relative group aspect-landscape rounded-xl overflow-hidden bg-morandi-bg border border-morandi-light/60 shadow-xs cursor-pointer photo-box"
+                                 onclick="triggerPhotoUpload(${dayIdx}, ${photoIdx})">
+                                <img src="${photoUrl}" alt="景點相片" class="w-full h-full object-cover transition duration-300 group-hover:scale-105">
+                                <button onclick="deletePhotoSlot(event, ${dayIdx}, ${photoIdx})" 
+                                        class="absolute top-2 right-2 bg-black/60 hover:bg-red-600 text-white w-7 h-7 rounded-full flex items-center justify-center text-xs transition z-20 shadow-md">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                        `;
+                    } else {
+                        photosGridHtml += `
+                            <div class="relative aspect-landscape rounded-xl border-2 border-dashed border-morandi-accent/60 bg-morandi-bg/60 hover:bg-morandi-accent/10 transition flex flex-col items-center justify-center cursor-pointer text-morandi-subtext hover:text-morandi-primary photo-box p-3"
+                                 onclick="triggerPhotoUpload(${dayIdx}, ${photoIdx})">
+                                <i class="fa-solid fa-cloud-arrow-up text-2xl mb-1 text-morandi-accent"></i>
+                                <span class="text-xs font-medium">點擊上傳橫式相片</span>
+                                <button onclick="deletePhotoSlot(event, ${dayIdx}, ${photoIdx})" 
+                                        class="absolute top-2 right-2 bg-gray-200 hover:bg-red-500 hover:text-white text-gray-600 w-6 h-6 rounded-full flex items-center justify-center text-xs transition z-20">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
+                        `;
+                    }
+                });
+
+                // Dual Column Body Component
+                const bodyHtml = `
+                    <div class="p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <!-- Left Column: Itinerary Timeline (7/12 cols) -->
+                        <div class="lg:col-span-7 space-y-3 relative timeline-line">
+                            <div class="flex justify-between items-center mb-3">
+                                <h3 class="font-serif font-bold text-morandi-primary text-base flex items-center gap-2">
+                                    <i class="fa-solid fa-route text-morandi-accent"></i> 當日行程列表
+                                </h3>
+                                ${isEditMode ? `
+                                    <button onclick="addNewItem(${dayIdx})" class="text-xs bg-morandi-accent/20 hover:bg-morandi-accent/30 text-morandi-primary px-3 py-1.5 rounded-lg border border-morandi-accent/40 font-medium transition flex items-center gap-1">
+                                        <i class="fa-solid fa-plus"></i> 新增行程
+                                    </button>
+                                ` : ''}
+                            </div>
+                            
+                            <div class="space-y-3">
+                                ${itemsListHtml}
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Landscape Photo Gallery (5/12 cols) -->
+                        <div class="lg:col-span-5 bg-morandi-bg/40 p-4 rounded-xl border border-morandi-light/40 flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between items-center mb-3">
+                                    <h3 class="font-serif font-bold text-morandi-primary text-base flex items-center gap-2">
+                                        <i class="fa-solid fa-camera-retro text-morandi-accent"></i> 景點相簿 (橫式)
+                                    </h3>
+                                    <button onclick="addPhotoSlot(${dayIdx})" class="text-xs bg-morandi-primary hover:bg-morandi-gradient text-white px-3 py-1.5 rounded-lg transition flex items-center gap-1 shadow-xs">
+                                        <i class="fa-solid fa-plus"></i> 新增圖片
+                                    </button>
+                                </div>
+                                
+                                ${photos.length === 0 ? `
+                                    <div class="text-center py-8 text-morandi-subtext border-2 border-dashed border-morandi-light/60 rounded-xl bg-white/60">
+                                        <i class="fa-regular fa-images text-3xl mb-2 text-morandi-accent"></i>
+                                        <p class="text-xs">尚未加入照片，請點擊「+ 新增圖片」</p>
+                                    </div>
+                                ` : `
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3.5">
+                                        ${photosGridHtml}
+                                    </div>
+                                `}
+                            </div>
+                            <p class="text-[12px] text-morandi-subtext mt-3 text-right italic">* 點擊框格即可直接選擇手機相片上傳</p>
+                        </div>
+                    </div>
+                `;
+
+                dayCard.innerHTML = headerHtml + bodyHtml;
+                container.appendChild(dayCard);
+            });
+        }
+
+        // Toggle Edit Mode
+        function toggleEditMode() {
+            isEditMode = !isEditMode;
+            const btnText = document.getElementById('editBtnText');
+            const btn = document.getElementById('toggleEditBtn');
+
+            if (isEditMode) {
+                btnText.textContent = '完成編輯';
+                btn.classList.remove('bg-morandi-gradient');
+                btn.classList.add('bg-amber-600');
+                showToast('已開啟編輯模式，可編輯或刪除單項行程');
+            } else {
+                btnText.textContent = '編輯行程';
+                btn.classList.remove('bg-amber-600');
+                btn.classList.add('bg-morandi-gradient');
+                showToast('已儲存變更');
+            }
+            renderItinerary();
+        }
+
+        // Update single item text
+        function updateItemText(dayIdx, itemIdx, value) {
+            itineraryData[dayIdx].items[itemIdx] = value.trim();
+            saveData();
+        }
+
+        // DELETE SINGLE ITINERARY ITEM
+        function deleteSingleItem(dayIdx, itemIdx) {
+            itineraryData[dayIdx].items.splice(itemIdx, 1);
+            saveData();
+            renderItinerary();
+            showToast('已刪除該行程項目');
+        }
+
+        // Add new item to a day
+        function addNewItem(dayIdx) {
+            itineraryData[dayIdx].items.push('新行程項目');
+            saveData();
+            renderItinerary();
+            showToast('已新增行程項目');
+        }
+
+        // Add photo card slot
+        function addPhotoSlot(dayIdx) {
+            if (!itineraryData[dayIdx].photos) {
+                itineraryData[dayIdx].photos = [];
+            }
+            itineraryData[dayIdx].photos.push(''); // Add blank frame
+            saveData();
+            renderItinerary();
+            showToast('已新增圖片框');
+        }
+
+        // Delete photo slot
+        function deletePhotoSlot(event, dayIdx, photoIdx) {
+            event.stopPropagation(); // Stop photo upload trigger
+            itineraryData[dayIdx].photos.splice(photoIdx, 1);
+            saveData();
+            renderItinerary();
+            showToast('已移除圖片框');
+        }
+
+        // Trigger Hidden File Upload
+        function triggerPhotoUpload(dayIdx, photoIdx) {
+            targetUploadIndex = { dayIdx, photoIdx };
+            const fileInput = document.getElementById('imageFileInput');
+            fileInput.click();
+        }
+
+        // Initialize Image Input Listener
+        function initFileUpload() {
+            const fileInput = document.getElementById('imageFileInput');
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file && targetUploadIndex.dayIdx !== null && targetUploadIndex.photoIdx !== null) {
+                    const reader = new FileReader();
+                    reader.onload = function (evt) {
+                        const { dayIdx, photoIdx } = targetUploadIndex;
+                        itineraryData[dayIdx].photos[photoIdx] = evt.target.result;
+                        saveData();
+                        renderItinerary();
+                        showToast('照片上傳成功！');
+                        fileInput.value = ''; // Reset input
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        // Scroll navigation
+        function scrollToDay(dayId) {
+            const target = document.getElementById(dayId);
+            if (target) {
+                const headerOffset = 110;
+                const elementPosition = target.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        // Toast feedback
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            toastMsg.textContent = message;
+            
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 2500);
+        }
+
+        // Escape helper
+        function escapeHtml(str) {
+            return str.replace(/[&<>"']/g, function(m) {
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                }[m];
+            });
+        }
+    </script>
+</body>
+</html>
